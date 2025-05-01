@@ -45,8 +45,8 @@ source venv/bin/activate
 # Установка зависимостей
 pip install -r requirements.txt
 
-# Запуск бота
-python afk_bot.py
+# Запуск бота с выводом всех сообщений об ошибках
+pkill -f "python" 2>/dev/null || true && sleep 2 && source venv/bin/activate && python afk_bot.py
 ```
 
 ## Особенности работы
