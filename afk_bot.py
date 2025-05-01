@@ -197,30 +197,45 @@ def set_user_status(client, user_id, minutes):
     else:
         status_text = f"AFK на {minutes} {'минуту' if minutes == 1 else 'минуты' if 2 <= minutes % 10 <= 4 and (minutes < 10 or minutes > 20) else 'минут'}"
     
-    # Set the status in Slack
-    try:
-        client.users_profile_set(
-            user=user_id,
-            profile={
-                "status_text": status_text,
-                "status_emoji": ":zzz:",
-                "status_expiration": int(expiry)
+    # Пробуем использовать разные эмодзи по очереди, пока один не сработает
+    emoji_options = [":afk:", ":zzz:", ":sleeping:", ":clock3:", ":coffee:"]
+    
+    success = False
+    error_message = ""
+    
+    for emoji in emoji_options:
+        try:
+            client.users_profile_set(
+                user=user_id,
+                profile={
+                    "status_text": status_text,
+                    "status_emoji": emoji,
+                    "status_expiration": int(expiry)
+                }
+            )
+            
+            print(f"Установлен статус AFK для пользователя {user_id} на {minutes} минут с эмодзи {emoji}")
+            success = True
+            
+            # Store status information
+            user_statuses[user_id] = {
+                "expiry": expiry,
+                "minutes": minutes
             }
-        )
-        
-        print(f"Установлен статус AFK для пользователя {user_id} на {minutes} минут")
-        
-        # Store status information
-        user_statuses[user_id] = {
-            "expiry": expiry,
-            "minutes": minutes
-        }
-        
-        # Schedule status cleanup
-        threading.Timer(minutes * 60, clear_status, args=[client, user_id, expiry]).start()
-        
-    except Exception as e:
-        print(f"Error setting status: {e}")
+            
+            # Schedule status cleanup
+            threading.Timer(minutes * 60, clear_status, args=[client, user_id, expiry]).start()
+            
+            # Успешно установили статус, выходим из цикла
+            break
+            
+        except Exception as e:
+            error_message = str(e)
+            print(f"Ошибка при установке статуса с эмодзи {emoji}: {e}")
+            continue  # Пробуем следующий эмодзи
+    
+    if not success:
+        print(f"Не удалось установить статус AFK: {error_message}")
 
 def clear_status(client, user_id, expected_expiry):
     """Clear the user's status if it hasn't been changed"""
