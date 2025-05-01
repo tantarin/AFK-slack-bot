@@ -31,6 +31,7 @@
 7. Скопируйте токены в файл `.env`:
    - `SLACK_BOT_TOKEN` из "OAuth & Permissions" (начинается с `xoxb-`)
    - `SLACK_APP_TOKEN` из "App-Level Tokens" (начинается с `xapp-`)
+   - `SLACK_USER_TOKEN` (начинается с `xoxp-`)
 
 ## Установка
 
