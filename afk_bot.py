@@ -271,6 +271,15 @@ def handle_message_events(body, client):
         set_user_status(client, user_id, minutes)
 
 if __name__ == "__main__":
+    print(f"SLACK_USER_TOKEN: {os.environ.get('SLACK_USER_TOKEN') is not None}")
+    print(f"SLACK_APP_TOKEN: {os.environ.get('SLACK_APP_TOKEN') is not None}")
+    
     handler = SocketModeHandler(app, os.environ.get("SLACK_APP_TOKEN"))
     print("⚡️ AFK бот запущен!")
-    handler.start() 
+    
+    try:
+        handler.start()
+    except Exception as e:
+        print(f"Ошибка при запуске бота: {e}")
+        import traceback
+        traceback.print_exc() 
