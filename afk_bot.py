@@ -22,11 +22,11 @@ AFK_PATTERN = re.compile(r'(?:афк|afk|АФК|AFK|афл|afл|аfк|аfл)', r
 TIME_PATTERNS = {
     'range': re.compile(r'(?:афк|afk|АФК|AFK|афл|afл|аfк|аfл)\s+(\d+(?:[.,]\d+)?)\s*[-–—]\s*(\d+(?:[.,]\d+)?)', re.IGNORECASE),
     'hours': re.compile(r'(?:афк|afk|АФК|AFK|афл|afл|аfк|аfл)\s+(\d+(?:[.,]\d+)?)\s*(?:h|ч|час|часа|часов)', re.IGNORECASE),
-    'minutes': re.compile(r'(?:афк|afk|АФК|AFK|афл|afл|аfк|аfл)\s+(\d+(?:[.,]\d+)?)\s*(?:m|min|мин|минут|минуты)', re.IGNORECASE),
+    'minutes': re.compile(r'(?:афк|afk|АФК|AFK|афл|afл|аfк|аfл)\s+(\d+(?:[.,]\d+)?)\s*(?:m|min|мин|минут|минуты|минута|минуту)', re.IGNORECASE),
     'half_hour': re.compile(r'(?:афк|afk|АФК|AFK|афл|afл|аfк|аfл)\s+(?:полчаса|half\s*hour)', re.IGNORECASE),
     'hour_word': re.compile(r'(?:афк|afk|АФК|AFK|афл|afл|аfк|аfл)\s+(?:час|one\s*hour)', re.IGNORECASE),
-    'mix_1': re.compile(r'(?:еще|ещё|still|more)\s+(\d+)\s*(?:мин|min|m|минут|минуты)', re.IGNORECASE),
-    'mix_2': re.compile(r'.*(?:афк|afk|АФК|AFK|афл|afл|аfк|аfл).*(\d+)\s*(?:мин|min|m|минут|минуты)', re.IGNORECASE),
+    'mix_1': re.compile(r'(?:еще|ещё|still|more)\s+(\d+)\s*(?:мин|min|m|минут|минуты|минута|минуту)', re.IGNORECASE),
+    'mix_2': re.compile(r'.*(?:афк|afk|АФК|AFK|афл|afл|аfк|аfл).*?(\d+)[\s\-_]*(?:мин|min|m|минут|минуты|минута|минуту)', re.IGNORECASE),
     'until_time': re.compile(r'(?:афк|afk|АФК|AFK|афл|afл|аfк|аfл).*(?:до|until|till)\s+(\d{1,2})[:\.]?(\d{0,2})', re.IGNORECASE),
     'simple_number': re.compile(r'(?:афк|afk|АФК|AFK|афл|afл|аfк|аfл)\s+(\d+(?:[.,]\d+)?)', re.IGNORECASE)
 }
@@ -34,21 +34,68 @@ TIME_PATTERNS = {
 # Кэш для быстрого распознавания общих команд
 COMMON_COMMANDS = {
     'afk 30': 30,
-    'afk 1': 60,
-    'afk 2': 120,
-    'afk 5': 300,
-    'afk 10': 600,
-    'afk 15': 900,
-    'afk 20': 1200,
-    'afk 60': 3600,
+    'afk 1': 60,  # 1 час = 60 минут
+    'afk 2': 120,  # 2 часа = 120 минут
+    'afk 3': 180,  # 3 часа = 180 минут
+    'afk 4': 240,  # 4 часа = 240 минут
+    'afk 5': 5,
+    'afk 10': 10,
+    'afk 15': 15,
+    'afk 20': 20,
+    'afk 60': 60,
     'афк 30': 30,
-    'афк 1': 60,
-    'афк 2': 120,
-    'афк 5': 300,
-    'афк 10': 600,
-    'афк 15': 900,
-    'афк 20': 1200,
-    'афк 60': 3600
+    'афк 1': 60,  # 1 час = 60 минут
+    'афк 2': 120,  # 2 часа = 120 минут
+    'афк 3': 180,  # 3 часа = 180 минут
+    'афк 4': 240,  # 4 часа = 240 минут
+    'афк 5': 5,
+    'афк 10': 10,
+    'афк 15': 15,
+    'афк 20': 20,
+    'афк 60': 60,
+    # Явные указания на минуты (с разными вариантами пробелов)
+    'afk 1 мин': 1,
+    'afk 1мин': 1,
+    'afk 1 min': 1,
+    'afk 1min': 1,
+    'afk 1 m': 1,
+    'afk 1m': 1,
+    'afk 1 минута': 1,
+    'afk 1 минуту': 1,
+    'afk 1 минуты': 1,
+    'афк 1 мин': 1,
+    'афк 1мин': 1,
+    'афк 1 min': 1,
+    'афк 1min': 1,
+    'афк 1 m': 1,
+    'афк 1m': 1,
+    'афк 1 минута': 1,
+    'афк 1 минуту': 1,
+    'афк 1 минуты': 1,
+    'afk 2 мин': 2,
+    'afk 2мин': 2,
+    'afk 2 min': 2,
+    'afk 2min': 2,
+    'афк 2 мин': 2,
+    'афк 2мин': 2,
+    'афк 2 min': 2,
+    'афк 2min': 2,
+    'afk 3 мин': 3,
+    'afk 3мин': 3,
+    'afk 3 min': 3,
+    'afk 3min': 3,
+    'афк 3 мин': 3,
+    'афк 3мин': 3,
+    'афк 3 min': 3,
+    'афк 3min': 3,
+    'afk 4 мин': 4,
+    'afk 4мин': 4,
+    'afk 4 min': 4,
+    'afk 4min': 4,
+    'афк 4 мин': 4,
+    'афк 4мин': 4,
+    'афк 4 min': 4,
+    'афк 4min': 4
 }
 
 # Общий список слов, похожих на afk для быстрой проверки
@@ -66,25 +113,23 @@ def is_similar_to_afk(word):
 def parse_time_to_minutes(message_text):
     """Оптимизированный парсер времени из сообщения"""
     
+    # Дополнительный отладочный вывод для минут
+    debugging_minutes = "мин" in message_text.lower() or "min" in message_text.lower()
+    if debugging_minutes:
+        print(f"DEBUG: Начинаем парсинг времени для '{message_text}'")
+    
     # Проверяем наличие в кэше часто используемых команд (самый быстрый путь)
     message_lower = message_text.lower().strip()
     if message_lower in COMMON_COMMANDS:
-        return COMMON_COMMANDS[message_lower]
+        if debugging_minutes:
+            print(f"DEBUG: Найдено в кэше команд: {COMMON_COMMANDS[message_lower]} минут")
+        minutes = COMMON_COMMANDS[message_lower]
+        return (min(minutes, 240), minutes)  # (capped, original)
     
-    # Проверяем простой формат "афк/afk число"
-    words = message_lower.split()
-    if len(words) >= 2:
-        for i, word in enumerate(words):
-            if word in AFK_WORDS and i + 1 < len(words) and words[i + 1].isdigit():
-                num = float(words[i + 1])
-                if num <= 24:  # Если число ≤ 24, считаем часами
-                    return int(num * 60)
-                return int(num)  # Иначе считаем минутами
-    
-    # Полный анализ с регулярными выражениями для сложных случаев
     # Проверяем наличие AFK в сообщении
     if not AFK_PATTERN.search(message_text):
         # Если AFK не найден, проверяем на опечатки только если сообщение короткое
+        words = message_lower.split()
         if len(message_text) <= 30:  
             # Для коротких сообщений проверяем каждое слово на сходство с AFK
             for word in words:
@@ -95,45 +140,102 @@ def parse_time_to_minutes(message_text):
         else:
             return None  # Для длинных сообщений без явного AFK просто пропускаем
     
-    # Проверка шаблонов от наиболее специфичных к наиболее общим
-    # Диапазон: "афк 1-1.5"
-    match = TIME_PATTERNS['range'].search(message_text)
+    # Сначала проверяем явные указания на минуты, часы и т.д.
+    
+    # Минуты: "афк 30m" or "афк 1 мин"
+    match = TIME_PATTERNS['minutes'].search(message_text)
     if match:
-        start, end = match.groups()
-        end = float(end.replace(',', '.'))
-        if end <= 24:
-            return int(end * 60)
-        return int(end)
+        minutes = float(match.group(1).replace(',', '.'))
+        if debugging_minutes:
+            print(f"DEBUG: Шаблон 'minutes' сработал: {minutes} минут")
+        return (min(int(minutes), 240), minutes)  # Ограничение в 4 часа
+    elif debugging_minutes:
+        print(f"DEBUG: Шаблон 'minutes' НЕ сработал")
+        
+        # Ручная проверка регулярного выражения для отладки
+        import re
+        pattern = r'(?:афк|afk|АФК|AFK|афл|afл|аfк|аfл)\s+(\d+(?:[.,]\d+)?)\s*(?:m|min|мин|минут|минуты|минута|минуту)'
+        manual_match = re.search(pattern, message_text, re.IGNORECASE)
+        if manual_match:
+            print(f"DEBUG: Ручная проверка шаблона успешна: {manual_match.group(1)}")
+        else:
+            print(f"DEBUG: Ручная проверка шаблона НЕ успешна")
+            print(f"DEBUG: Проверяем части выражения:")
+            
+            # Проверка наличия AFK
+            afk_pattern = r'(?:афк|afk|АФК|AFK|афл|afл|аfк|аfл)'
+            if re.search(afk_pattern, message_text, re.IGNORECASE):
+                print(f"DEBUG: AFK найден в сообщении")
+            else:
+                print(f"DEBUG: AFK НЕ найден в сообщении")
+                
+            # Проверка формата числа
+            if re.search(r'\d+(?:[.,]\d+)?', message_text):
+                print(f"DEBUG: Число найдено в сообщении")
+            else:
+                print(f"DEBUG: Число НЕ найдено в сообщении")
+                
+            # Проверка минут
+            if re.search(r'(?:m|min|мин|минут|минуты|минута|минуту)', message_text, re.IGNORECASE):
+                print(f"DEBUG: Обозначение минут найдено в сообщении")
+            else:
+                print(f"DEBUG: Обозначение минут НЕ найдено в сообщении")
     
     # Часы: "афк 1h"
     match = TIME_PATTERNS['hours'].search(message_text)
     if match:
         hours = float(match.group(1).replace(',', '.'))
-        return int(hours * 60)
-    
-    # Минуты: "афк 30m"
-    match = TIME_PATTERNS['minutes'].search(message_text)
-    if match:
-        minutes = float(match.group(1).replace(',', '.'))
-        return int(minutes)
+        minutes = int(hours * 60)
+        return (min(minutes, 240), minutes)  # Ограничение в 4 часа
     
     # Полчаса: "афк полчаса"
     if TIME_PATTERNS['half_hour'].search(message_text):
-        return 30
+        return (30, 30)  # Не нужно ограничивать, меньше 4 часов
     
     # Час: "афк час"
     if TIME_PATTERNS['hour_word'].search(message_text):
-        return 60
+        return (60, 60)  # Не нужно ограничивать, меньше 4 часов
+    
+    # Теперь проверяем более простые форматы
+    
+    # Проверяем простой формат "афк/afk число"
+    words = message_lower.split()
+    if len(words) >= 2:
+        for i, word in enumerate(words):
+            if word in AFK_WORDS and i + 1 < len(words) and words[i + 1].isdigit():
+                num = float(words[i + 1])
+                # Если число меньше 5, считаем часами
+                if num < 5:
+                    minutes = int(num * 60)
+                else:
+                    minutes = int(num)
+                return (min(minutes, 240), minutes)  # Ограничение в 4 часа
+    
+    # Проверка остальных шаблонов
+    
+    # Диапазон: "афк 1-1.5" или "афк 15-20"
+    match = TIME_PATTERNS['range'].search(message_text)
+    if match:
+        start, end = match.groups()
+        end = float(end.replace(',', '.'))
+        # Все числа в диапазоне считаем минутами
+        minutes = int(end)
+        # Ограничение: не более 4 часов (240 минут)
+        if minutes > 240:
+            minutes = 240
+        return (minutes, minutes)
     
     # Смешанный формат 1: "Еще 30 мин афк"
     match = TIME_PATTERNS['mix_1'].search(message_text)
     if match:
-        return int(match.group(1))
+        minutes = int(match.group(1))
+        return (min(minutes, 240), minutes)  # Ограничение в 4 часа
     
     # Смешанный формат 2: "Плохо себя чувствую. АФК минут 40"
     match = TIME_PATTERNS['mix_2'].search(message_text)
     if match:
-        return int(match.group(1))
+        minutes = int(match.group(1))
+        return (min(minutes, 240), minutes)  # Ограничение в 4 часа
     
     # До времени: "АФК до 12"
     match = TIME_PATTERNS['until_time'].search(message_text)
@@ -150,20 +252,35 @@ def parse_time_to_minutes(message_text):
             target_time += datetime.timedelta(days=1)
         
         diff = target_time - now
-        return int(diff.total_seconds() / 60)
+        minutes = int(diff.total_seconds() / 60)
+        return (min(minutes, 240), minutes)  # Ограничение в 4 часа
     
     # Простое число: "афк 30"
     match = TIME_PATTERNS['simple_number'].search(message_text)
     if match:
         num = float(match.group(1).replace(',', '.'))
-        if num <= 24:
-            return int(num * 60)
-        return int(num)
+        # Если число меньше 5, считаем часами
+        if num < 5:
+            minutes = int(num * 60)
+        else:
+            minutes = int(num)
+        # Иначе считаем минутами
+        return (min(minutes, 240), minutes)  # Ограничение в 4 часа
     
     return None
 
-def set_user_status(client, user_id, minutes):
+def set_user_status(client, user_id, minutes, original_minutes=None):
     """Set user's status to AFK for the specified number of minutes"""
+    
+    # Если запрошенное время больше 4 часов, выводим сообщение о ограничении
+    if original_minutes is not None and original_minutes > minutes:
+        try:
+            client.chat_postMessage(
+                channel=user_id,
+                text=f"⚠️ Ваше запрошенное время AFK ({original_minutes} минут) было ограничено до 4 часов (240 минут)."
+            )
+        except Exception as e:
+            print(f"Не удалось отправить уведомление о лимите: {e}")
     
     # Проверяем текущий статус пользователя в Slack
     try:
@@ -278,12 +395,26 @@ def handle_message_events(body, client):
         # Быстрая проверка не нашла упоминания AFK, пропускаем дальнейший анализ
         return
     
-    # Parse time from message
-    minutes = parse_time_to_minutes(message_text)
+    # Отладочный вывод для проверки распознавания минут
+    if "мин" in message_text.lower() or "min" in message_text.lower():
+        print(f"Обнаружено указание на минуты в сообщении: '{message_text}'")
+        # Проверяем работу шаблона minutes
+        match = TIME_PATTERNS['minutes'].search(message_text)
+        if match:
+            print(f"Шаблон 'minutes' сработал: найдено {match.group(1)} минут")
+        else:
+            print(f"Шаблон 'minutes' НЕ сработал для текста '{message_text}'")
     
-    if minutes:
-        print(f"Время: {minutes} минут")
-        set_user_status(client, user_id, minutes)
+    # Parse time from message
+    result = parse_time_to_minutes(message_text)
+    
+    if result:
+        capped_minutes, original_minutes = result
+        if capped_minutes < original_minutes:
+            print(f"Время ограничено: запрошено {original_minutes} мин, установлено {capped_minutes} мин")
+        else:
+            print(f"Время: {capped_minutes} минут")
+        set_user_status(client, user_id, capped_minutes, original_minutes)
 
 if __name__ == "__main__":
     print(f"SLACK_USER_TOKEN: {os.environ.get('SLACK_USER_TOKEN') is not None}")
