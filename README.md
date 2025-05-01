@@ -24,7 +24,7 @@
    - `groups:history` (для чтения сообщений в приватных каналах)
    - `im:history` (для чтения сообщений в личных сообщениях)
    - `mpim:history` (для чтения сообщений в групповых личных сообщениях)
-3. Включите Socket Mode в разделе "Socket Mode"
+3. Включите Socket Mode в разделе "Socket Mode" (Если вы планируете публиковать бота в Slack Marketplace, нужно использовать Request URLs)
 4. Включите Event Subscriptions в разделе "Event Subscriptions"
 5. В "Event Subscriptions" → "Subscribe to bot events" добавьте событие `message.channels`, `message.groups`, `message.im` и `message.mpim`
 6. Создайте App-Level Token в разделе "Basic Information" → "App-Level Tokens" с scope `connections:write`
