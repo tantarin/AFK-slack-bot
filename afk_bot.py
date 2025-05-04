@@ -311,9 +311,12 @@ def set_user_status(client, user_id, minutes, original_minutes=None):
         print(f"Error checking current status: {e}")
     
     # Проверяем, не установлен ли уже статус через бота
+    has_existing_afk = False
     if user_id in user_statuses and user_statuses[user_id]["expiry"] > time.time():
-        # Status already set and not expired, don't update
-        return
+        # Status already set and not expired
+        has_existing_afk = True
+        previous_minutes = user_statuses[user_id]["minutes"]
+        print(f"Пользователь {user_id} уже имеет статус AFK на {previous_minutes} минут. Заменяем на {minutes} минут.")
     
     # Calculate expiry time
     expiry = time.time() + (minutes * 60)
@@ -346,7 +349,11 @@ def set_user_status(client, user_id, minutes, original_minutes=None):
                 }
             )
             
-            print(f"Установлен статус AFK для пользователя {user_id} на {minutes} минут с эмодзи {emoji}")
+            if has_existing_afk:
+                print(f"Обновлен статус AFK для пользователя {user_id} на {minutes} минут с эмодзи {emoji}")
+            else:
+                print(f"Установлен статус AFK для пользователя {user_id} на {minutes} минут с эмодзи {emoji}")
+            
             success = True
             
             # Store status information
@@ -354,6 +361,10 @@ def set_user_status(client, user_id, minutes, original_minutes=None):
                 "expiry": expiry,
                 "minutes": minutes
             }
+            
+            # If there was an existing timer, we need to cancel it
+            # Since we can't easily cancel the timer, we'll just let it run and have it
+            # check the expected_expiry when it tries to clear
             
             # Schedule status cleanup
             threading.Timer(minutes * 60, clear_status, args=[client, user_id, expiry]).start()
